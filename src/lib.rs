@@ -1,5 +1,5 @@
 #[allow(dead_code)]
-fn hex_to_base64(hex_str: &str) -> String {
+pub fn hex_to_base64(hex_str: &str) -> String {
     let bin_repr: Vec<u8> = hex_str.to_lowercase()
         .as_bytes()
         .chunks(6)

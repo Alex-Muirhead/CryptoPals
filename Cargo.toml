@@ -1,8 +1,9 @@
 [package]
 name = "cryptopals"
 version = "0.1.0"
-authors = ["QuantumAlex <alexandermuirhead@hotmail.com>"]
+authors = ["Alex Muirhead"]
 edition = "2018"
+default-run = "crytopals"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -1,5 +1,16 @@
+use std::ops::Deref;
+
 struct EncodedData {
     bytes: Vec<u8>
+}
+
+// Allows for `EncodedData` to inherit / reference methods from `Vec<u8>`
+impl Deref for EncodedData {
+    type Target = Vec<u8>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.bytes
+    }
 }
 
 impl EncodedData {
@@ -17,7 +28,7 @@ impl EncodedData {
 
 #[allow(dead_code)]
 pub fn hex_to_base64(hex_str: &str) -> String {
-    let bin_repr: Vec<u8> = EncodedData::from_hex(hex_str).bytes
+    let bin_repr: Vec<u8> = EncodedData::from_hex(hex_str)
         .chunks(3)
         .flat_map(process_chunk)
         .collect();

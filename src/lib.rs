@@ -18,11 +18,8 @@ impl EncodedData {
 
 #[allow(dead_code)]
 pub fn hex_to_base64(hex_str: &str) -> String {
-    let bin_repr: Vec<u8> = hex_str.to_lowercase()
-        .bytes()
-        .map(utf8_to_hex)
-        .collect::<Vec<u8>>()
-        .chunks(6)
+    let bin_repr: Vec<u8> = EncodedData::from_hex(hex_str).bytes
+        .chunks(3)
         .flat_map(process_chunk)
         .collect();
     return String::from_utf8(bin_repr).unwrap()

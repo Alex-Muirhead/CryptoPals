@@ -1,7 +1,27 @@
+#[repr(transparent)]
+struct EncodedData {
+    bytes: Vec<u8>
+}
+
+impl EncodedData {
+    fn from_hex(utf8_str: &str) -> Self {
+        let bytes = utf8_str.to_lowercase()  // Ensure a-f
+            .bytes()
+            .map(utf8_to_hex)
+            .collect::<Vec<u8>>()
+            .chunks_exact(2)
+            .map(|pair| pair[0] * 16 + pair[1])
+            .collect();
+        EncodedData { bytes }
+    }
+}
+
 #[allow(dead_code)]
 pub fn hex_to_base64(hex_str: &str) -> String {
     let bin_repr: Vec<u8> = hex_str.to_lowercase()
-        .as_bytes()
+        .bytes()
+        .map(utf8_to_hex)
+        .collect::<Vec<u8>>()
         .chunks(6)
         .flat_map(process_chunk)
         .collect();
@@ -11,15 +31,14 @@ pub fn hex_to_base64(hex_str: &str) -> String {
 #[allow(dead_code)]
 fn process_chunk(chunk: &[u8]) -> impl Iterator<Item=u8> {
     let dec: u32 = chunk.iter()
-        .map(utf8_to_hex)
-        .fold(0, |acc, n| 16*acc + n as u32);
+        .fold(0, |acc, &n| 16*acc + n as u32);
     (0..4).rev().map(move |i| -> u8 {
         base64_to_utf8((dec >> 6*i) as u8 % 64)
     })
 }
 
 #[allow(dead_code)]
-fn utf8_to_hex(utf8_byte: &u8) -> u8 {
+fn utf8_to_hex(utf8_byte: u8) -> u8 {
     match utf8_byte {
         n @ 97..=102 => n - 87,  // a-f
         n @ 48..=57  => n - 48,  // 0-9
@@ -47,8 +66,7 @@ mod test {
     fn read_hex() {
         let input = "0123456789abcdef";
         assert_eq!(
-            input.as_bytes()
-                .iter()
+            input.bytes()
                 .map(utf8_to_hex)
                 .collect::<Vec<u8>>(),
             (0..16).collect::<Vec<u8>>()

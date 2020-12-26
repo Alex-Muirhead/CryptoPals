@@ -1,4 +1,3 @@
-#[repr(transparent)]
 struct EncodedData {
     bytes: Vec<u8>
 }

@@ -4,7 +4,7 @@ struct EncodedData {
 
 impl EncodedData {
     fn from_hex(utf8_str: &str) -> Self {
-        let bytes = utf8_str.to_lowercase()  // Ensure a-f
+        let bytes = utf8_str.to_lowercase()  // Ensure a-z
             .bytes()
             .map(utf8_to_hex)
             .collect::<Vec<u8>>()

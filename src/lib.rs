@@ -1,54 +1,36 @@
-use std::ops::Deref;
-
-struct EncodedData {
-    bytes: Vec<u8>
-}
-
-// Allows for `EncodedData` to inherit / reference methods from `Vec<u8>`
-impl Deref for EncodedData {
-    type Target = Vec<u8>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.bytes
-    }
-}
-
-impl EncodedData {
-    fn from_hex(utf8_str: &str) -> Self {
-        let bytes = utf8_str.to_lowercase()  // Ensure a-z
-            .bytes()
-            .map(utf8_to_hex)
-            .collect::<Vec<u8>>()
-            .chunks_exact(2)
-            .map(|pair| pair[0] * 16 + pair[1])
-            .collect();
-        EncodedData { bytes }
-    }
+fn from_hex(utf8_str: &str) -> Vec<u8> {
+    utf8_str.to_lowercase()  // Ensure a-z
+        .bytes()
+        .map(utf8_to_hex)
+        .collect::<Vec<u8>>()  // -> base16 values
+        .chunks_exact(2)
+        .map(|pair| pair[0] * 16 + pair[1])  // -> base256
+        .collect()
 }
 
 #[allow(dead_code)]
 pub fn hex_to_base64(hex_str: &str) -> String {
-    let bin_repr: Vec<u8> = EncodedData::from_hex(hex_str)
+    let utf8_bytes: Vec<u8> = from_hex(hex_str)
         .chunks(3)
         .flat_map(process_chunk)
         .collect();
-    return String::from_utf8(bin_repr).unwrap()
+    return String::from_utf8(utf8_bytes).unwrap()
 }
 
 #[allow(dead_code)]
 fn process_chunk(chunk: &[u8]) -> impl Iterator<Item=u8> {
-    let dec: u32 = chunk.iter()
-        .fold(0, |acc, &n| 256*acc + n as u32);
+    let bits: u32 = chunk.iter()
+        .fold(0, |acc, &n| acc * 256 + n as u32);
     (0..4).rev().map(move |i| -> u8 {
-        base64_to_utf8((dec >> 6*i) as u8 % 64)
+        base64_to_utf8((bits >> 6*i) as u8 % 64)
     })
 }
 
 #[allow(dead_code)]
 fn utf8_to_hex(utf8_byte: u8) -> u8 {
     match utf8_byte {
-        n @ 97..=102 => n - 87,  // a-f
-        n @ 48..=57  => n - 48,  // 0-9
+        97..=102 => utf8_byte - 87,  // a-f
+        48..=57  => utf8_byte - 48,  // 0-9
         _ => panic!("Invalid hex character!")
     }
 }
@@ -56,9 +38,9 @@ fn utf8_to_hex(utf8_byte: u8) -> u8 {
 #[allow(dead_code)]
 fn base64_to_utf8(base64_byte: u8) -> u8 {
     match base64_byte {
-        n @ 0..=25  => n + 65,  // A-Z
-        n @ 26..=51 => n + 71,  // a-z
-        n @ 52..=61 => n - 4,   // 0-9
+        0..=25  => base64_byte + 65,  // A-Z
+        26..=51 => base64_byte + 71,  // a-z
+        52..=61 => base64_byte - 4,   // 0-9
         62 => 43,               // +
         63 => 47,               // /
         _  => panic!("Invalid base64 number!")

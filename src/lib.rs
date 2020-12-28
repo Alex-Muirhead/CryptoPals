@@ -38,7 +38,7 @@ pub fn hex_to_base64(hex_str: &str) -> String {
 #[allow(dead_code)]
 fn process_chunk(chunk: &[u8]) -> impl Iterator<Item=u8> {
     let dec: u32 = chunk.iter()
-        .fold(0, |acc, &n| 16*acc + n as u32);
+        .fold(0, |acc, &n| 256*acc + n as u32);
     (0..4).rev().map(move |i| -> u8 {
         base64_to_utf8((dec >> 6*i) as u8 % 64)
     })

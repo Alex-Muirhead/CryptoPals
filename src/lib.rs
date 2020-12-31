@@ -1,16 +1,33 @@
-fn from_hex(utf8_str: &str) -> Vec<u8> {
-    utf8_str.to_lowercase()  // Ensure a-z
-        .bytes()
-        .map(utf8_to_hex)
-        .collect::<Vec<u8>>()  // -> base16 values
-        .chunks_exact(2)
-        .map(|pair| pair[0] * 16 + pair[1])  // -> base256
-        .collect()
+use std::ops::Deref;
+
+pub struct EncodedData {
+    bytes: Vec<u8>
+}
+
+impl Deref for EncodedData {
+    type Target = Vec<u8>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.bytes
+    }
+}
+
+impl EncodedData {
+    fn from_hex(utf8_str: &str) -> Self {
+        let bytes = utf8_str.to_lowercase()  // Ensure a-z
+            .bytes()
+            .map(utf8_to_hex)
+            .collect::<Vec<u8>>()
+            .chunks_exact(2)
+            .map(|pair| pair[0] * 16 + pair[1])
+            .collect();
+        EncodedData { bytes }
+    }
 }
 
 #[allow(dead_code)]
 pub fn hex_to_base64(hex_str: &str) -> String {
-    let utf8_bytes: Vec<u8> = from_hex(hex_str)
+    let utf8_bytes: EncodedData = EncodedData::from_hex(hex_str)
         .chunks(3)
         .flat_map(process_chunk)
         .collect();

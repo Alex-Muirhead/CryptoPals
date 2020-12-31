@@ -1,3 +1,4 @@
+use std::iter::FromIterator;
 use std::ops::Deref;
 
 pub struct EncodedData {
@@ -9,6 +10,12 @@ impl Deref for EncodedData {
 
     fn deref(&self) -> &Self::Target {
         &self.bytes
+    }
+}
+
+impl FromIterator<u8> for EncodedData {
+    fn from_iter<I: IntoIterator<Item=u8>>(iter: I) -> Self {
+        EncodedData { bytes: Vec::from_iter(iter) }
     }
 }
 
@@ -31,7 +38,7 @@ pub fn hex_to_base64(hex_str: &str) -> String {
         .chunks(3)
         .flat_map(process_chunk)
         .collect();
-    return String::from_utf8(utf8_bytes).unwrap()
+    return String::from_utf8(utf8_bytes.bytes).unwrap()
 }
 
 #[allow(dead_code)]

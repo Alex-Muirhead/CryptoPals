@@ -1,7 +1,7 @@
 use std::{iter::FromIterator, ops::BitXor};
 use std::ops::Deref;
 
-mod hex;
+pub mod hex;
 
 pub struct EncodedData {
     pub bytes: Vec<u8>

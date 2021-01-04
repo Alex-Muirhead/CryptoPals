@@ -1,7 +1,7 @@
 use std::{iter::FromIterator, ops::BitXor};
 use std::ops::Deref;
 
-pub mod hex;
+mod hex;
 
 pub struct EncodedData {
     pub bytes: Vec<u8>
@@ -52,7 +52,7 @@ fn process_chunk(chunk: &[u8]) -> impl Iterator<Item=u8> {
 #[allow(dead_code)]
 fn base64_to_utf8(base64_byte: u8) -> u8 {
     match base64_byte {
-        0..=25  => base64_byte + 65,  // A-Z
+         0..=25 => base64_byte + 65,  // A-Z
         26..=51 => base64_byte + 71,  // a-z
         52..=61 => base64_byte - 4,   // 0-9
         62 => 43,               // +

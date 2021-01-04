@@ -1,5 +1,5 @@
-use std::{iter::FromIterator, ops::BitXor};
-use std::ops::Deref;
+use std::iter::FromIterator;
+use std::ops::{Deref, BitXor};
 
 pub mod hex;
 

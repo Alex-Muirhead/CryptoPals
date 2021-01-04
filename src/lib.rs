@@ -21,6 +21,7 @@ impl FromIterator<u8> for EncodedData {
     }
 }
 
+// obj_one ^ obj_two -> Requires BitXor Trait
 impl BitXor for EncodedData {
     type Output = EncodedData;
 

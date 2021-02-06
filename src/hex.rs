@@ -29,7 +29,7 @@ fn utf8_to_hex(utf8_byte: u8) -> u8 {
     match utf8_byte {
         97..=102 => utf8_byte - 87,  // a-f
         48..=57  => utf8_byte - 48,  // 0-9
-        _ => panic!("Invalid hex character!")
+        _ => panic!(format!("Invalid hex character {:#x}!", utf8_byte))
     }
 }
 

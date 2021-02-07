@@ -55,3 +55,17 @@ char -> utf8 -> value
 '4'  -> 52   -> 4
 'd'  -> 100  -> 13
 ```
+
+## Bitwise XOR Operation
+
+`a ^ b` with `^` caret operator
+`true ^ true == false`
+`true ^ false == true`
+`false ^ false == false`
+
+```
+  01101010
+^ 00001111
+----------
+  01100101
+```
